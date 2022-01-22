@@ -5,6 +5,7 @@
 * 프로젝트 초기 의존성 추가
     * Spring Boot DevTools
     * Lombok
+    * jpa
     * Spring Web
     * Spring security
     * PostgreSQL Driver

@@ -11,12 +11,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        use_sql_comments: true
         #        show_sql: true
         jdbc:
           lob:
             non_contextual_creation: true
   thymeleaf:
     cache: false
+
   devtools:
     livereload:
       enabled: true
@@ -25,3 +27,5 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+  logging:
+    level: debug
