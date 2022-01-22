@@ -9,6 +9,9 @@
     * Spring security
     * PostgreSQL Driver
     * Thymeleaf
+    * Thymeleaf - springsecurity5
+    * modelmapper :  version: '3.0.0'
+    * p6spy
 
 
 * 설치 방법
