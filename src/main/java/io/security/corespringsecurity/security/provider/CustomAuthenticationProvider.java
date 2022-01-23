@@ -1,9 +1,11 @@
 package io.security.corespringsecurity.security.provider;
 
+import io.security.corespringsecurity.security.common.FormWebAuthenticationDetails;
 import io.security.corespringsecurity.security.service.AccountContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -29,7 +31,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         //password 검증
         if (!passwordEncoder.matches(password, accountContext.getAccount().getPassword())) {
-            throw new BadCredentialsException("BadCredentialsException");
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        //secret key 검증(login.html)
+        FormWebAuthenticationDetails formWebAuthenticationDetails = (FormWebAuthenticationDetails) authentication.getDetails();
+        String secretKey = formWebAuthenticationDetails.getSecretKey();
+        if (secretKey == null || !"secret".equals(secretKey)) {
+            throw new InsufficientAuthenticationException("InsufficientAuthenticationException");
         }
 
         //accountContext 객체를 예외가 발생하지 않고 정상적으로 얻었다면, 아이디는 검증이 된것이다.

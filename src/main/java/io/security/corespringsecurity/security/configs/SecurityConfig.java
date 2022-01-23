@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
+    private final AuthenticationDetailsSource authenticationDetailsSource;
 
     //Spring Security 가 내가 만든 UserDetailsService 를 통하여 인증 처리를 하게된다.
     @Override
@@ -59,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login_proc") //login.html -> form action 값이 login_proc 임 맞춰줘야 합니다.
+                .authenticationDetailsSource(authenticationDetailsSource) //인증처리 과정속에서 전달되는 파라미터를 설정
                 .defaultSuccessUrl("/")
                 .permitAll()
         ;
