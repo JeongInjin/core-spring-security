@@ -15,11 +15,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     private final UserDetailsService userDetailsService;
     private final AuthenticationDetailsSource authenticationDetailsSource;
@@ -63,6 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login_proc") //login.html -> form action 값이 login_proc 임 맞춰줘야 합니다.
                 .authenticationDetailsSource(authenticationDetailsSource) //인증처리 과정속에서 전달되는 파라미터를 설정
                 .defaultSuccessUrl("/")
+                .successHandler(customAuthenticationSuccessHandler) //인증받기전 가고자 하던 url 로 이동한다.
                 .permitAll()
         ;
         ;
