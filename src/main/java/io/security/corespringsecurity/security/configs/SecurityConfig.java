@@ -1,6 +1,7 @@
 package io.security.corespringsecurity.security.configs;
 
 import io.security.corespringsecurity.security.common.FormWebAuthenticationDetailsSource;
+import io.security.corespringsecurity.security.handler.CustomAccessDeniedHandler;
 import io.security.corespringsecurity.security.provider.CustomAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -67,13 +69,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .loginProcessingUrl("/login_proc") //login.html -> form action 값이 login_proc 임 맞춰줘야 합니다.
+                .loginProcessingUrl("/login_proc") // -> form action 값이 login_proc 임 맞춰줘야 합니다.
                 .authenticationDetailsSource(formWebAuthenticationDetailsSource) //인증처리 과정속에서 전달되는 파라미터를 설정
                 .defaultSuccessUrl("/")
                 .successHandler(customAuthenticationSuccessHandler) //인증받기전 가고자 하던 url 로 이동한다.
                 .failureHandler(customAuthenticationFailureHandler) //인증 실패시 처리하는 handler
                 .permitAll()
+                .and()
+                .exceptionHandling()//인증 거부 처리
+                .accessDeniedHandler(accessDeniedHandler())//인증 거부 처리
         ;
-        ;
+    }
+
+    //인증 거부 처리
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler();
+        accessDeniedHandler.setErrorPage("/denied");
+
+        return accessDeniedHandler;
     }
 }
