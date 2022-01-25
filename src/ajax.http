@@ -1,0 +1,11 @@
+### Send request with dynamic variables in request's body
+POST http://localhost:8080/api/login
+Content-Type: application/json
+X-Requested-With: XMLHttpRequest
+
+{
+  "username": "user",
+  "password": "1234"
+}
+
+###
