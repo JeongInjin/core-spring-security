@@ -1,7 +1,6 @@
 package io.security.corespringsecurity.security.configs;
 
 import io.security.corespringsecurity.security.common.AjaxLoginAuthenticationEntryPoint;
-import io.security.corespringsecurity.security.filter.AjaxLoginProcessingFilter;
 import io.security.corespringsecurity.security.handler.AjaxAccessDeniedHandler;
 import io.security.corespringsecurity.security.handler.AjaxAuthenticationFailureHandler;
 import io.security.corespringsecurity.security.handler.AjaxAuthenticationSuccessHandler;
@@ -16,7 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 /**
@@ -55,8 +53,8 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/messages").hasRole("MANAGER")// messages 인가설정
                 .anyRequest().authenticated()
-                .and()
-                .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)//기존의 필터 앞에 추가
+//                .and()
+//                .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)//기존의 필터 앞에 추가
         ;
         http
                 .exceptionHandling()
@@ -65,6 +63,19 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
         ;
         http.csrf().disable();
 
+        customConfigurerAjax(http);
+
+    }
+
+    //custom DSLs
+    private void customConfigurerAjax(HttpSecurity http) throws Exception {
+        http
+                .apply(new AjaxLoginConfigurer<>())
+                .successHandlerAjax(ajaxAuthenticationSuccessHandler())
+                .failureHandlerAjax(ajaxAuthenticationFailureHandler())
+                .setAuthenticationManager(authenticationManager())
+                .loginProcessingUrl("/api/login")
+        ;
     }
 
     @Bean
@@ -74,13 +85,13 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     //authenticationManager must be specified Exception 으로 인한 authenticationManager 가져오는 부분
-    @Bean
-    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
-        AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
-        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBean());
-        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler());
-        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler());
-
-        return ajaxLoginProcessingFilter;
-    }
+//    @Bean
+//    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
+//        AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
+//        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBean());
+//        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler());
+//        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler());
+//
+//        return ajaxLoginProcessingFilter;
+//    }
 }
