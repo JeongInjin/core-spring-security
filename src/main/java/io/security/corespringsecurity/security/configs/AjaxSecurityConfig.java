@@ -52,6 +52,7 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatcher("/api/**")
                 .authorizeRequests()
                 .antMatchers("/api/messages").hasRole("MANAGER")// messages 인가설정
+                .antMatchers("/api/login").permitAll()
                 .anyRequest().authenticated()
 //                .and()
 //                .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)//기존의 필터 앞에 추가
