@@ -8,8 +8,12 @@ import io.security.corespringsecurity.security.handler.FormAccessDeniedHandler;
 import io.security.corespringsecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import io.security.corespringsecurity.security.provider.AjaxAuthenticationProvider;
 import io.security.corespringsecurity.security.provider.FormAuthenticationProvider;
+<<<<<<< HEAD
 import io.security.corespringsecurity.service.SecurityResourceService;
 import lombok.RequiredArgsConstructor;
+=======
+import io.security.corespringsecurity.security.service.SecurityResourceService;
+>>>>>>> e32bbfe (웹기반 인가처리 DB 연동 - FilterInvocationSecurityMetadataSource(2) test 완료)
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +53,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final SecurityResourceService securityResourceService;
 
+
+    @Autowired
+    private SecurityResourceService securityResourceService;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -159,7 +166,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() throws Exception {
+<<<<<<< HEAD
         return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean().getObject());
+=======
+        return new UrlFilterInvocationSecurityMetadatsSource(urlResourcesMapFactoryBean().getObject());
+>>>>>>> e32bbfe (웹기반 인가처리 DB 연동 - FilterInvocationSecurityMetadataSource(2) test 완료)
     }
 
     private UrlResourcesMapFactoryBean urlResourcesMapFactoryBean() {

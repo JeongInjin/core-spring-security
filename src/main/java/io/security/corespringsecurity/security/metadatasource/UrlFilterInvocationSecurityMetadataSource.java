@@ -14,11 +14,18 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
 
     private LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new LinkedHashMap<>();
 
+<<<<<<< HEAD:src/main/java/io/security/corespringsecurity/security/metadatasource/UrlFilterInvocationSecurityMetadataSource.java
     public UrlFilterInvocationSecurityMetadataSource(LinkedHashMap<RequestMatcher, List<ConfigAttribute>> resourcesMap) {
         this.requestMap = resourcesMap;
     }
 
 
+=======
+    public UrlFilterInvocationSecurityMetadatsSource(LinkedHashMap<RequestMatcher, List<ConfigAttribute>> resourcesMap) {
+        this.requestMap = resourcesMap;
+    }
+
+>>>>>>> e32bbfe (웹기반 인가처리 DB 연동 - FilterInvocationSecurityMetadataSource(2) test 완료):src/main/java/io/security/corespringsecurity/security/metadatasource/UrlFilterInvocationSecurityMetadatsSource.java
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
 

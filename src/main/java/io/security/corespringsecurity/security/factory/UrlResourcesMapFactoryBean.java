@@ -1,6 +1,10 @@
 package io.security.corespringsecurity.security.factory;
 
+<<<<<<< HEAD
 import io.security.corespringsecurity.service.SecurityResourceService;
+=======
+import io.security.corespringsecurity.security.service.SecurityResourceService;
+>>>>>>> e32bbfe (웹기반 인가처리 DB 연동 - FilterInvocationSecurityMetadataSource(2) test 완료)
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -23,6 +27,10 @@ public class UrlResourcesMapFactoryBean implements FactoryBean<LinkedHashMap<Req
         if (resourceMap == null) {
             init();
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> e32bbfe (웹기반 인가처리 DB 연동 - FilterInvocationSecurityMetadataSource(2) test 완료)
         return resourceMap;
     }
 
@@ -37,6 +45,10 @@ public class UrlResourcesMapFactoryBean implements FactoryBean<LinkedHashMap<Req
 
     @Override
     public boolean isSingleton() {
+<<<<<<< HEAD
         return true;
+=======
+        return FactoryBean.super.isSingleton();
+>>>>>>> e32bbfe (웹기반 인가처리 DB 연동 - FilterInvocationSecurityMetadataSource(2) test 완료)
     }
 }
