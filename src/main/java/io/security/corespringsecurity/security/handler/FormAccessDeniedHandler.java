@@ -15,30 +15,33 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 @Component
 public class FormAccessDeniedHandler implements AccessDeniedHandler {
 
-	private String errorPage;
+    private String errorPage;
 
-	private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new ObjectMapper();
 
-	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-	
-	@Override
-	public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-		if (WebUtil.isAjax(request)) {
-			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-			response.getWriter().write(this.mapper.writeValueAsString(ResponseEntity.status(HttpStatus.FORBIDDEN)));
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
-		} else {
-			String deniedUrl = errorPage + "?exception=" + accessDeniedException.getMessage();
-			redirectStrategy.sendRedirect(request, response, deniedUrl);
-		}
-	}
-	
-	public void setErrorPage(String errorPage) {
+        if (WebUtil.isAjax(request)) {
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.getWriter().write(this.mapper.writeValueAsString(ResponseEntity.status(HttpStatus.FORBIDDEN)));
+
+        } else {
+            String exMessage = URLEncoder.encode(accessDeniedException.getMessage(), "UTF-8");
+            String deniedUrl = new String(errorPage + "?exception=" + exMessage);
+
+            redirectStrategy.sendRedirect(request, response, deniedUrl);
+        }
+    }
+
+    public void setErrorPage(String errorPage) {
         if ((errorPage != null) && !errorPage.startsWith("/")) {
             throw new IllegalArgumentException("errorPage must begin with '/'");
         }

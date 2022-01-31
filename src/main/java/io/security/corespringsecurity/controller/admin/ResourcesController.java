@@ -5,6 +5,7 @@ import io.security.corespringsecurity.domain.dto.ResourcesDto;
 import io.security.corespringsecurity.domain.entity.Resources;
 import io.security.corespringsecurity.domain.entity.Role;
 import io.security.corespringsecurity.repository.RoleRepository;
+import io.security.corespringsecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import io.security.corespringsecurity.service.ResourcesService;
 import io.security.corespringsecurity.service.RoleService;
 import org.modelmapper.ModelMapper;
@@ -21,75 +22,80 @@ import java.util.Set;
 
 @Controller
 public class ResourcesController {
-	
-	@Autowired
-	private ResourcesService resourcesService;
 
-	@Autowired
-	private RoleRepository roleRepository;
+    @Autowired
+    private ResourcesService resourcesService;
 
-	@Autowired
-	private RoleService roleService;
+    @Autowired
+    private RoleRepository roleRepository;
 
-	@GetMapping(value="/admin/resources")
-	public String getResources(Model model) throws Exception {
+    @Autowired
+    private RoleService roleService;
 
-		List<Resources> resources = resourcesService.getResources();
-		model.addAttribute("resources", resources);
+    @Autowired
+    private UrlFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource;
 
-		return "admin/resource/list";
-	}
+    @GetMapping(value = "/admin/resources")
+    public String getResources(Model model) throws Exception {
 
-	@PostMapping(value="/admin/resources")
-	public String createResources(ResourcesDto resourcesDto) throws Exception {
+        List<Resources> resources = resourcesService.getResources();
+        model.addAttribute("resources", resources);
 
-		ModelMapper modelMapper = new ModelMapper();
-		Role role = roleRepository.findByRoleName(resourcesDto.getRoleName());
-		Set<Role> roles = new HashSet<>();
-		roles.add(role);
-		Resources resources = modelMapper.map(resourcesDto, Resources.class);
-		resources.setRoleSet(roles);
+        return "admin/resource/list";
+    }
 
-		resourcesService.createResources(resources);
+    @PostMapping(value = "/admin/resources")
+    public String createResources(ResourcesDto resourcesDto) throws Exception {
 
-		return "redirect:/admin/resources";
-	}
+        ModelMapper modelMapper = new ModelMapper();
+        Role role = roleRepository.findByRoleName(resourcesDto.getRoleName());
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        Resources resources = modelMapper.map(resourcesDto, Resources.class);
+        resources.setRoleSet(roles);
 
-	@GetMapping(value="/admin/resources/register")
-	public String viewRoles(Model model) throws Exception {
+        resourcesService.createResources(resources);
+        filterInvocationSecurityMetadataSource.reload();
 
-		List<Role> roleList = roleService.getRoles();
-		model.addAttribute("roleList", roleList);
+        return "redirect:/admin/resources";
+    }
 
-		ResourcesDto resources = new ResourcesDto();
-		Set<Role> roleSet = new HashSet<>();
-		roleSet.add(new Role());
-		resources.setRoleSet(roleSet);
-		model.addAttribute("resources", resources);
+    @GetMapping(value = "/admin/resources/register")
+    public String viewRoles(Model model) throws Exception {
 
-		return "admin/resource/detail";
-	}
-
-	@GetMapping(value="/admin/resources/{id}")
-	public String getResources(@PathVariable String id, Model model) throws Exception {
-
-		List<Role> roleList = roleService.getRoles();
+        List<Role> roleList = roleService.getRoles();
         model.addAttribute("roleList", roleList);
-		Resources resources = resourcesService.getResources(Long.valueOf(id));
 
-		ModelMapper modelMapper = new ModelMapper();
-		ResourcesDto resourcesDto = modelMapper.map(resources, ResourcesDto.class);
-		model.addAttribute("resources", resourcesDto);
+        ResourcesDto resources = new ResourcesDto();
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(new Role());
+        resources.setRoleSet(roleSet);
+        model.addAttribute("resources", resources);
 
-		return "admin/resource/detail";
-	}
+        return "admin/resource/detail";
+    }
 
-	@GetMapping(value="/admin/resources/delete/{id}")
-	public String removeResources(@PathVariable String id, Model model) throws Exception {
+    @GetMapping(value = "/admin/resources/{id}")
+    public String getResources(@PathVariable String id, Model model) throws Exception {
 
-		Resources resources = resourcesService.getResources(Long.valueOf(id));
-		resourcesService.deleteResources(Long.valueOf(id));
+        List<Role> roleList = roleService.getRoles();
+        model.addAttribute("roleList", roleList);
+        Resources resources = resourcesService.getResources(Long.valueOf(id));
 
-		return "redirect:/admin/resources";
-	}
+        ModelMapper modelMapper = new ModelMapper();
+        ResourcesDto resourcesDto = modelMapper.map(resources, ResourcesDto.class);
+        model.addAttribute("resources", resourcesDto);
+
+        return "admin/resource/detail";
+    }
+
+    @GetMapping(value = "/admin/resources/delete/{id}")
+    public String removeResources(@PathVariable String id, Model model) throws Exception {
+
+        Resources resources = resourcesService.getResources(Long.valueOf(id));
+        resourcesService.deleteResources(Long.valueOf(id));
+        filterInvocationSecurityMetadataSource.reload();
+
+        return "redirect:/admin/resources";
+    }
 }
