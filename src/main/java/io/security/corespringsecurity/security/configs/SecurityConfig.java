@@ -9,6 +9,7 @@ import io.security.corespringsecurity.security.handler.FormAccessDeniedHandler;
 import io.security.corespringsecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import io.security.corespringsecurity.security.provider.AjaxAuthenticationProvider;
 import io.security.corespringsecurity.security.provider.FormAuthenticationProvider;
+import io.security.corespringsecurity.security.voter.IpAddressVoter;
 import io.security.corespringsecurity.service.SecurityResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -154,6 +155,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return permitAllFilter;
     }
 
+    //접근 결정 관리자
     private AccessDecisionManager affirmativeBased() {
         AffirmativeBased affirmativeBased = new AffirmativeBased(getAccessDecisionVoters());
         return affirmativeBased;
@@ -162,11 +164,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
 
         List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
+
+        //ip role 적용 - 가장먼저 심사하여야 한다.
+        accessDecisionVoters.add(new IpAddressVoter(securityResourceService));
+
         //처음 버전인 지정된 role 만 허용한다
 //        accessDecisionVoters.add(new RoleVoter());
+
         //hierarchy 구조로 role 허용
         accessDecisionVoters.add(roleVoter());
-//        return Arrays.asList(new RoleVoter());
+
         return accessDecisionVoters;
     }
 
