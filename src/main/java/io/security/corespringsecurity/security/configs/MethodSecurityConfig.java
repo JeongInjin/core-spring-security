@@ -2,11 +2,13 @@ package io.security.corespringsecurity.security.configs;
 
 
 import io.security.corespringsecurity.security.factory.MethodResourcesMapFactoryBean;
+import io.security.corespringsecurity.security.interceptor.CustomMethodSecurityInterceptor;
 import io.security.corespringsecurity.security.processor.ProtectPointcutPostProcessor;
 import io.security.corespringsecurity.service.SecurityResourceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.intercept.RunAsManager;
 import org.springframework.security.access.method.MapBasedMethodSecurityMetadataSource;
 import org.springframework.security.access.method.MethodSecurityMetadataSource;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -50,6 +52,29 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
         return methodResourcesFactoryBean;
     }
 
+    @Bean
+    public ProtectPointcutPostProcessor protectPointcutPostProcessor() {
+
+        ProtectPointcutPostProcessor protectPointcutPostProcessor = new ProtectPointcutPostProcessor(mapBasedMethodSecurityMetadataSource());
+        protectPointcutPostProcessor.setPointcutMap(pointcutResourcesMapFactoryBean().getObject());
+
+        return protectPointcutPostProcessor;
+    }
+    
+    @Bean
+    public CustomMethodSecurityInterceptor customMethodSecurityInterceptor(MapBasedMethodSecurityMetadataSource methodSecurityMetadataSource) {
+        CustomMethodSecurityInterceptor customMethodSecurityInterceptor = new CustomMethodSecurityInterceptor();
+        customMethodSecurityInterceptor.setAccessDecisionManager(accessDecisionManager());
+        customMethodSecurityInterceptor.setAfterInvocationManager(afterInvocationManager());
+        customMethodSecurityInterceptor.setSecurityMetadataSource(methodSecurityMetadataSource);
+        RunAsManager runAsManager = runAsManager();
+        if (runAsManager != null) {
+            customMethodSecurityInterceptor.setRunAsManager(runAsManager);
+        }
+
+        return customMethodSecurityInterceptor;
+    }
+
     /**
      * pointcut 표현식을 parse 하여 parse 한 데이터 중 보안이 필요하고 프록시 대상이 될 빈들을 찾아서
      * 클래스, 메소드, 보안 정보를 추출하여 위 MapBasedMethodSecurityMetadataSource 에 전달해야 한다.
@@ -80,13 +105,6 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 //
 //        return (BeanPostProcessor) instance;
 //    }
-    @Bean
-    public ProtectPointcutPostProcessor protectPointcutPostProcessor() {
 
-        ProtectPointcutPostProcessor protectPointcutPostProcessor = new ProtectPointcutPostProcessor(mapBasedMethodSecurityMetadataSource());
-        protectPointcutPostProcessor.setPointcutMap(pointcutResourcesMapFactoryBean().getObject());
-
-        return protectPointcutPostProcessor;
-    }
 
 }
