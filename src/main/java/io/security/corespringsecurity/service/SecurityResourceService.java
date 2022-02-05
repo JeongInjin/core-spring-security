@@ -67,6 +67,24 @@ public class SecurityResourceService {
         return result;
     }
 
+    /**
+     * @return Pointcut 방식의 인가처리를 위한 return 되는 LinkedHashMap
+     */
+    public LinkedHashMap<String, List<ConfigAttribute>> getPointcutResourceList() {
+
+        LinkedHashMap<String, List<ConfigAttribute>> result = new LinkedHashMap<>();
+        List<Resources> resourcesList = resourcesRepository.findAllPointcutResources();
+        resourcesList.forEach(r -> {
+            List<ConfigAttribute> configAttributeList = new ArrayList<>();
+            r.getRoleSet().forEach(role -> {
+                configAttributeList.add(new SecurityConfig(role.getRoleName()));
+            });
+            result.put(r.getResourceName(), configAttributeList);
+        });
+
+        return result;
+    }
+
     public HashMap<String, String> getAccessIpList() {
         //list
 //        List<String> accessIpList = accessIpRepository.findAll().stream().map(accessIp -> accessIp.getIpAddress()).collect(Collectors.toList());
