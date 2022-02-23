@@ -22,6 +22,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * 암호화 default : bcrypt
+     * new PasswordEncoderFactories.createDelegatingPasswordEncoder();
+     */
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 

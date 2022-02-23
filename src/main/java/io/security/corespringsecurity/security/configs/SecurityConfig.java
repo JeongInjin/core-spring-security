@@ -111,6 +111,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .setAuthenticationManager(authenticationManagerBean());
     }
 
+    /**
+     * passwordEncoder 방식설정 관련 default = bcrypt 형식의 암호화 방식.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
