@@ -40,6 +40,15 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 초기화 과정 시 권한이 map 객체에 담긴 상태 -> ExpressionBasedFilterInvocationSecurityMetadataSource > processMap()
+ * 결과를 부모 클래스인 DefaultFilterInvocationSecurityMetadataSource 다시 전달한다.
+ * <p>
+ * 권한정보를 추출하는 클래스 - DefaultFilterInvocationSecurityMetadataSource > getAttributes()
+ * <p>
+ * 인증시도시 -> FilterSecurityInterceptor > doFilter() 가 받음 (인가처리)
+ * - > getAttributes() 해당 패턴에 맞는 값이 있는지 찾아서 반환
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
