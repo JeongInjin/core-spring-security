@@ -173,9 +173,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * PermitAllFilter -> List<RequestMatcher> ->matches-> request ->
      * True 일 경우 return Null -> 권한 심사 없이 바로 통과
      * False 일 경우 -> 인가처리 -> AbstractSecurityInterceptor 에게 전달
-     *
-     * @return
-     * @throws Exception
+     * => 결론 -> 정상적인 flow 인 AbstractSecurityInterceptor -> List<RequestMatcher>
+     * 부분을 PermitAllFilter 로 대체한다.
      */
     @Bean
     public PermitAllFilter customFilterSecurityInterceptor() throws Exception {
