@@ -21,6 +21,7 @@ import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleHierarchyVoter;
+import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -79,6 +80,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    /**
+     * ******************************************
+     * urlFilterInvocationSecurityMetadataSource ->
+     * customFilterSecurityInterceptor ->
+     * debug - FilterChainProxy -> doFilter()
+     * -> UrlFilterInvocationSecurityMetadataSource getAttribute() 호출
+     * 해당 인가 처리가 통과되면 다음 필터가 같은 필터라 할지라도 체크하지 않고 넘어간다.
+     * ******************************************
+     */
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http
@@ -154,6 +164,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return commonAccessDeniedHandler;
     }
 
+    /**
+     * 정석적인 flow
+     * FilterSecurityInterceptor ->인가처리->AbstractSecurityInterceptor->권한목록->List<ConfigAttribute>
+     * ->Null일 경우 권한 심사 없이 바로 통과 Null 이 아닐경우 -> AccessDecisionManager 에게 전달
+     * <p>
+     * PermitAllFilter 를 구현함으로써
+     * PermitAllFilter -> List<RequestMatcher> ->matches-> request ->
+     * True 일 경우 return Null -> 권한 심사 없이 바로 통과
+     * False 일 경우 -> 인가처리 -> AbstractSecurityInterceptor 에게 전달
+     *
+     * @return
+     * @throws Exception
+     */
     @Bean
     public PermitAllFilter customFilterSecurityInterceptor() throws Exception {
         //PermitAllFilter 생성으로 인하여 반환 FilterSecurityInterceptor ->  PermitAllFilter 변경
@@ -162,7 +185,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //위에 선언한 array permitAllResources 을 생성자로 넘김
         PermitAllFilter permitAllFilter = new PermitAllFilter(permitAllResources);
         permitAllFilter.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
-        permitAllFilter.setAccessDecisionManager(affirmativeBased());
+        permitAllFilter.setAccessDecisionManager(affirmativeBased()); // 3가지 타입이 있다.
         permitAllFilter.setAuthenticationManager(authenticationManagerBean());
         return permitAllFilter;
     }
@@ -181,7 +204,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         accessDecisionVoters.add(new IpAddressVoter(securityResourceService));
 
         //처음 버전인 지정된 role 만 허용한다
-//        accessDecisionVoters.add(new RoleVoter());
+        accessDecisionVoters.add(new RoleVoter());
 
         //hierarchy 구조로 role 허용
         accessDecisionVoters.add(roleVoter());
@@ -203,6 +226,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return roleHierarchy;
     }
 
+    /**
+     * UrlFilterInvocationSecurityMetadataSource 를 config 에 설정파일을 넣기위한 작업
+     *
+     * @return
+     * @throws Exception
+     */
     @Bean
     public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() throws Exception {
         return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean().getObject(), securityResourceService);

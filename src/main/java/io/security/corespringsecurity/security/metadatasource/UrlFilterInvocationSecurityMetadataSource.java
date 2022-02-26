@@ -21,13 +21,16 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
         this.securityResourceService = securityResourceService;
     }
 
+    //Object 형식으로 받는 이유는 추후 Method 방식일
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
 
+        //사용자가 어떠한  url 로 요청했는지 정보를 가져올 수 있다.
         HttpServletRequest request = ((FilterInvocation) object).getRequest();
 
 //        requestMap.put(new AntPathRequestMatcher("/mypage"), Arrays.asList(new SecurityConfig("ROLE_USER")));
 
+        //사용자 정보랑 일치하면 value(권한정보) 를 return 한다.
         if (requestMap != null) {
             for (Map.Entry<RequestMatcher, List<ConfigAttribute>> entry : requestMap.entrySet()) {
                 RequestMatcher matcher = entry.getKey();
